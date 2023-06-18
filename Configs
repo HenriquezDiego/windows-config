@@ -1,0 +1,131 @@
+*Configuraciones*
+Primero se debe de configurar una ip estatica
+*Reconocer las interfaces de red*
+
+SSH
+
+ssh-keygen -t rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub $remote_user@$remote_host
+-----------------------------------------------------------------------------
+
+(Starting and Stopping Interfaces
+# ifdown enp7s0
+# ifup enp7s0
+Reinitialize new network setup
+# systemctl status networking
+# systemctl restart networking)
+
+Interfaces configured with "/etc/network/interfaces"
+
+Configuring the interface manually
+auto eth0
+iface eth0 inet static
+	address 192.0.2.7/24
+	gateway 192.0.2.254
+------------------------------------------------------------------------------
+	
+*DNS*
+apt-get update
+apt-get install bind9
+*archivos de configuracion*
+(/etc/bind/)
+
+cd /etc/bind
+
+realizar copia de los dos archivos base db.empty y db.127
+configuracion name.conf.local
+
+Configuracion de db.empty(DIRECTA)
+
+$TTL    3600
+@       IN      SOA     hotel.com. root.hotel.com. (
+                   2007010401           ; Serial
+                         3600           ; Refresh [1h]
+                          600           ; Retry   [10m]
+                        86400           ; Expire  [1d]
+                          600 )         ; Negative Cache TTL [1h]
+;
+@       IN      NS      hotel.com.
+hotel.com.       IN      A     192.168.1.1
+
+Configuracion de db.127(INVERSA)
+
+1.168.192.in-addr.arpa. IN      SOA     hotel.com. root.hotel.com. (
+                   2007010401           ; Serial
+                         3600           ; Refresh [1h]
+                          600           ; Retry   [10m]
+                        86400           ; Expire  [1d]
+                          600 )         ; Negative Cache TTL [1h]
+;
+
+1.168.192.in-addr.arpa.    IN      NS      hotel.com.
+1.1.168.192.in-addr.arpa.  IN      PTR     hotel.com.
+
+Configuracion named.conf.local
+
+zone "hotel.com" {
+        type master;
+        file "/etc/bind/db.hotel";
+        allow-update {none;};
+};
+zone "127.in-addr.arpa" {
+        type master;nan
+        file "/etc/bind/db.192";
+         allow-update {none;};
+};
+
+Siempre que se haga una configuracion reiniciarla
+/etc/init.d/named restart
+
+Comprobacion
+nslookup hotel.com
+nslookup 192.168.1.1 (Si no funciona configurar el resolv
+) nano /etc/resolv.conf
+
+------------------------------------------------------------------------
+MARIADB
+
+apt install mariadb-client mariadb-server
+mysql (Para entrar al gestor de base de datos consola de maria db)
+create user alejandra@localhost identified by 'Contraseña';
+grant all privileges on *.* to alejandra@localhost;
+flush privileges;
+
+--------------------------------------------------------------------------
+APACHE
+
+apt install php8.1 libapache2-mod-php8.1
+apt install apache2 
+
+w3m navegador por terminal (w3m "ip o url")
+
+---------------------------------------------------------------------------
+PHPMYADMIN
+ apt install php-zip php-bz2
+ /etc/init.d/apache2 reload
+ wget https://files.phpmyadmin.net/phpMyAdmin/5.1.3/phpMyAdmin-5.1.3-all-languages.zip
+ apt install unzip
+ (DEscomprimirlo) unzip  ´nombre del archivo´
+ (Cambiar nombre) mv ´nombre del archivo´ /var/www/html/´nombre que le quiero poner´
+
+ 
+ Si da un error d extensiones descomentar la siguiente linea en el archivo php.ini(/etc/php/8.1/apache2/php.ini)
+ 
+ Instalar (apt-get install php-mysql)
+ 
+ ---------------------------------------------------------------------------
+ FTP
+ 
+ apt install proftpd-basic proftpd-doc
+ (Archivo de configuracion de FTP) nano /etc/proftpd/proftpd.conf
+ (Reiniciar el servicio de ftp) /etc/init.d/proftpd restart
+ ---------------------------------------------------------------------------
+ 
+ Para verficar los archivo tranftpsferidos puedo usar 
+ ls /home/"nombre_del_usuario"/ftp/
+ (la carpeta ftp se crea siguiendo la guia)
+ --------------------------------------------------------------------------
+ Para ver las paginas web copiar los archivos en la ruta /var/www/html
+ cp -r "ruta_de_la_carpeta" /var/www/html
+ 
+ 
