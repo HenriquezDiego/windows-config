@@ -1,0 +1,8 @@
+function Open-ContaWebApi { &devenv /run C:\Users\dfhen\source\repos\contawebapi\ContaWebApi.sln }
+function Open-IdentityServer { &rider64 C:\Users\dfhen\source\repos\identityserver\IdentityServer.sln}
+#Alias
+Set-Alias g git
+Set-Alias contawebapi Open-ContaWebApi
+Set-Alias identity Open-IdentityServer
+Set-Alias Proyecon Open-ContaWebApi
+#oh-my-posh init pwsh --config ~/.paradox.omp.json
